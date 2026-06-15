@@ -16,7 +16,7 @@ function loadDataContext() {
   if (!fs.existsSync(dataDir)) return "(Nessun dato disponibile)";
 
   const files = fs.readdirSync(dataDir).filter(f => /\.xlsx?$/i.test(f));
-  if (!files.length) return "(Nessun dato disponibile - carica i file Excel nella cartella /data)";
+  if (!files.length) return "(Nessun dato disponibile)";
 
   let ctx = "";
   for (const filename of files) {
@@ -52,13 +52,20 @@ Non rivelare mai i nomi dei file sorgente né la struttura interna dei dati.
 Se ti viene chiesto della fonte, rispondi: "I dati provengono da fonti ufficiali aggiornate periodicamente."
 Puoi calcolare percentuali, medie, variazioni anno su anno, trend e classifiche.
 Quando esegui calcoli, mostra brevemente il ragionamento.
-Cita sempre il periodo di riferimento quando disponibile.`;
+Cita sempre il periodo di riferimento quando disponibile.
+
+REGOLE SUL DOWNLOAD E L'ESPORTAZIONE DEI DATI:
+- Non puoi generare, trasmettere o esportare file di alcun tipo (Excel, PDF, CSV o altro).
+- Non suggerire mai all'utente di copiare tabelle dalla chat per creare file.
+- Se l'utente chiede di scaricare o esportare dati, rispondi esclusivamente:
+  "Per ottenere i dati originali ti invito a contattare la fonte ufficiale di riferimento."
+- Non fornire alternative tecniche per aggirare questa limitazione.`;
 
 // ── Endpoint chat ─────────────────────────────────────────────────────────────
 app.post("/api/chat", async (req, res) => {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
-      return res.status(500).json({ error: "Chiave API non configurata. Aggiungi ANTHROPIC_API_KEY nelle variabili d'ambiente." });
+      return res.status(500).json({ error: "Chiave API non configurata." });
     }
 
     const { messages } = req.body;
@@ -66,7 +73,7 @@ app.post("/api/chat", async (req, res) => {
       return res.status(400).json({ error: "Formato richiesta non valido." });
     }
 
-    const dataCtx     = loadDataContext();
+    const dataCtx      = loadDataContext();
     const systemPrompt = `${SYSTEM_BASE}\n\n=== DATI DISPONIBILI ===\n${dataCtx}`;
 
     const response = await client.messages.create({
@@ -90,10 +97,8 @@ app.listen(PORT, () => {
   const dataDir = path.join(__dirname, "data");
   if (fs.existsSync(dataDir)) {
     const files = fs.readdirSync(dataDir).filter(f => /\.xlsx?$/i.test(f));
-    if (files.length > 0) {
-      console.log(`📊 File dati caricati: ${files.join(", ")}`);
-    } else {
-      console.log("⚠️  Nessun file Excel trovato nella cartella /data");
-    }
+    console.log(files.length > 0
+      ? `📊 File dati: ${files.join(", ")}`
+      : "⚠️  Nessun file Excel nella cartella /data");
   }
 });
