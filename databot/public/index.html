@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataBot</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-dark: #0D2137;
+      --navy:      #14335A;
+      --blue:      #1A5FAD;
+      --blue-mid:  #2272CC;
+      --blue-lt:   #EBF3FB;
+      --border:    #C8D8ED;
+      --border-md: #A8BDD8;
+      --text:      #0F2235;
+      --text-mid:  #3D5470;
+      --text-lt:   #6A85A0;
+      --white:     #FFFFFF;
+      --bg:        #F2F6FB;
+      --green-bg:  #EBF7F2;
+      --green-tx:  #0D5C35;
+      --green-bd:  #6BBFA0;
+      --red-bg:    #FDF1F1;
+      --red-tx:    #8B1A1A;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    /* ── HEADER ───────────────────────────────────────────── */
+    header {
+      height: 56px;
+      background: var(--navy-dark);
+      border-bottom: 2px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      flex-shrink: 0;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+
+    .brand-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 500; color: white;
+    }
+
+    .brand-name  { color: white; font-weight: 500; font-size: 15px; letter-spacing: .3px; }
+    .brand-sub   { color: #7A9CB8; font-size: 10px; letter-spacing: .5px; }
+
+    .header-badge {
+      font-size: 11px; color: #5A8AAA;
+      border: 1px solid #2A4A6A;
+      border-radius: 4px; padding: 3px 10px;
+    }
+
+    /* ── CHAT AREA ────────────────────────────────────────── */
+    #chat-area { flex: 1; overflow-y: auto; padding: 24px 0; }
+
+    .inner {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── WELCOME ──────────────────────────────────────────── */
+    .welcome-intro {
+      border-left: 4px solid var(--blue);
+      padding-left: 18px;
+      margin-bottom: 32px;
+    }
+    .welcome-title { font-size: 20px; font-weight: 500; color: var(--navy); margin-bottom: 8px; }
+    .welcome-desc  { font-size: 14px; color: var(--text-mid); line-height: 1.7; }
+
+    .section-label {
+      font-size: 11px; font-weight: 500;
+      color: var(--text-lt); letter-spacing: .8px;
+      text-transform: uppercase; margin-bottom: 14px;
+    }
+
+    .suggested-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .suggested-btn {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 6px 6px 0;
+      padding: 12px 16px;
+      text-align: left; cursor: pointer;
+      font-size: 13px; color: var(--navy);
+      font-family: inherit;
+      transition: background .1s;
+      width: 100%;
+    }
+    .suggested-btn:hover { background: var(--blue-lt); }
+
+    /* ── MESSAGES ─────────────────────────────────────────── */
+    .msg        { display: flex; margin-bottom: 20px; align-items: flex-start; }
+    .msg.user   { justify-content: flex-end; }
+    .msg.bot    { gap: 12px; }
+
+    .msg-wrap       { max-width: 76%; }
+    .msg.user .msg-wrap { max-width: 72%; }
+
+    .avatar {
+      width: 32px; height: 32px; border-radius: 4px; flex-shrink: 0;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 500; color: white;
+    }
+
+    .msg-label { font-size: 10px; color: var(--text-lt); letter-spacing: .4px; margin-bottom: 5px; }
+    .msg.user .msg-label { text-align: right; margin-bottom: 0; margin-top: 4px; }
+
+    .bubble { padding: 11px 15px; font-size: 14px; line-height: 1.72; }
+
+    .bubble.user {
+      background: var(--navy); color: white;
+      border-radius: 8px 2px 8px 8px;
+    }
+    .bubble.bot {
+      background: var(--white); color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 2px 8px 8px 8px;
+      box-shadow: 0 1px 3px rgba(14,33,55,.06);
+    }
+    .bubble.loading { color: var(--text-lt); font-style: italic; }
+
+    /* ── ERROR ────────────────────────────────────────────── */
+    #error-bar {
+      display: none;
+      margin: 0 24px 8px;
+      background: var(--red-bg); border: 1px solid #E8AAAA;
+      border-radius: 4px; padding: 9px 14px;
+      font-size: 13px; color: var(--red-tx);
+      align-items: center; justify-content: space-between; gap: 12px;
+    }
+    #error-bar.show { display: flex; }
+    #error-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--red-tx); font-size: 18px; flex-shrink: 0;
+    }
+
+    /* ── INPUT ────────────────────────────────────────────── */
+    footer {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      padding: 12px 24px 14px;
+      flex-shrink: 0;
+    }
+
+    .input-wrap { max-width: 700px; margin: 0 auto; }
+
+    .input-row {
+      display: flex; gap: 10px; align-items: flex-end;
+      border: 1.5px solid var(--blue); border-radius: 6px;
+      padding: 6px 6px 6px 14px; background: var(--white);
+      transition: border-color .15s;
+    }
+    .input-row.busy { border-color: var(--border); }
+
+    #msg-input {
+      flex: 1; border: none; outline: none; resize: none;
+      font-size: 14px; color: var(--text); background: transparent;
+      font-family: inherit; padding: 6px 0; line-height: 1.5;
+      min-height: 32px; max-height: 100px; overflow-y: auto;
+    }
+
+    #send-btn {
+      background: var(--blue); color: white;
+      border: none; border-radius: 4px;
+      padding: 8px 22px; font-size: 13px; font-weight: 500;
+      cursor: pointer; font-family: inherit;
+      transition: background .15s; flex-shrink: 0;
+    }
+    #send-btn:disabled { background: var(--border); cursor: not-allowed; }
+
+    .input-note {
+      font-size: 11px; color: var(--text-lt);
+      margin-top: 7px; text-align: center; letter-spacing: .2px;
+    }
+
+    /* ── SCROLLBAR ────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── RESPONSIVE ───────────────────────────────────────── */
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      .inner { padding: 0 14px; }
+      footer { padding: 10px 14px 12px; }
+      .bubble { font-size: 13px; }
+      .header-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="brand">
+    <div class="brand-icon">D</div>
+    <div>
+      <div class="brand-name">DataBot</div>
+      <div class="brand-sub">ASSISTENTE DATI</div>
+    </div>
+  </div>
+  <div class="header-badge">Dati aggiornati periodicamente</div>
+</header>
+
+<!-- CHAT -->
+<div id="chat-area">
+  <div class="inner">
+
+    <!-- Welcome screen (visibile finché non ci sono messaggi) -->
+    <div id="welcome">
+      <div class="welcome-intro">
+        <div class="welcome-title">Benvenuto in DataBot</div>
+        <div class="welcome-desc">
+          Puoi interrogare i dati in linguaggio naturale. Fai domande su prestazioni,
+          tempi di attesa, confronti tra regioni o andamenti nel tempo.
+        </div>
+      </div>
+      <div class="section-label">Domande frequenti</div>
+      <div class="suggested-list" id="suggested-list"></div>
+    </div>
+
+    <!-- Messaggi -->
+    <div id="messages" style="display:none;"></div>
+
+    <div id="anchor"></div>
+  </div>
+</div>
+
+<!-- ERRORE -->
+<div id="error-bar">
+  <span id="error-text"></span>
+  <button id="error-close" onclick="hideError()">×</button>
+</div>
+
+<!-- INPUT -->
+<footer>
+  <div class="input-wrap">
+    <div class="input-row" id="input-row">
+      <textarea id="msg-input" rows="1"
+        placeholder="Scrivi una domanda… (Invio per inviare)"></textarea>
+      <button id="send-btn" onclick="handleSend()">Invia</button>
+    </div>
+    <div class="input-note">
+      Le risposte si basano su dati ufficiali aggiornati periodicamente
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── Domande suggerite (personalizzabili) ─────────────────── */
+  const SUGGESTED = [
+    "Quanti dati sono disponibili e come sono organizzati?",
+    "Mostrami un riepilogo dei principali indicatori",
+    "Ci sono dati per più anni? Confrontali",
+    "Qual è il valore medio dell'indicatore principale per area geografica?",
+  ];
+
+  /* ── Stato ────────────────────────────────────────────────── */
+  let messages = [];
+  let busy     = false;
+
+  /* ── Init: domande suggerite ──────────────────────────────── */
+  const suggestedList = document.getElementById("suggested-list");
+  SUGGESTED.forEach(q => {
+    const btn = document.createElement("button");
+    btn.className   = "suggested-btn";
+    btn.textContent = q;
+    btn.onclick     = () => handleSend(q);
+    suggestedList.appendChild(btn);
+  });
+
+  /* ── Auto-resize textarea ─────────────────────────────────── */
+  const inputEl = document.getElementById("msg-input");
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + "px";
+  });
+  inputEl.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  });
+
+  /* ── Errore ───────────────────────────────────────────────── */
+  function showError(msg) {
+    document.getElementById("error-text").textContent = msg;
+    document.getElementById("error-bar").classList.add("show");
+  }
+  function hideError() {
+    document.getElementById("error-bar").classList.remove("show");
+  }
+
+  /* ── Stato busy ───────────────────────────────────────────── */
+  function setBusy(val) {
+    busy = val;
+    document.getElementById("send-btn").disabled      = val;
+    document.getElementById("input-row").classList.toggle("busy", val);
+  }
+
+  /* ── Scroll in fondo ──────────────────────────────────────── */
+  function scrollBottom() {
+    document.getElementById("anchor").scrollIntoView({ behavior: "smooth" });
+  }
+
+  /* ── Escape HTML ──────────────────────────────────────────── */
+  function esc(str) {
+    const d = document.createElement("div");
+    d.textContent = str;
+    return d.innerHTML.replace(/\n/g, "<br>");
+  }
+
+  /* ── Render messaggi ──────────────────────────────────────── */
+  function render() {
+    const welcome  = document.getElementById("welcome");
+    const msgBox   = document.getElementById("messages");
+
+    if (messages.length === 0) {
+      welcome.style.display  = "block";
+      msgBox.style.display   = "none";
+      return;
+    }
+
+    welcome.style.display  = "none";
+    msgBox.style.display   = "block";
+
+    let html = "";
+    messages.forEach(m => {
+      if (m.role === "user") {
+        html += `
+          <div class="msg user">
+            <div class="msg-wrap">
+              <div class="bubble user">${esc(m.content)}</div>
+              <div class="msg-label">TU</div>
+            </div>
+          </div>`;
+      } else {
+        html += `
+          <div class="msg bot">
+            <div class="avatar">D</div>
+            <div class="msg-wrap">
+              <div class="msg-label">DATABOT</div>
+              <div class="bubble bot">${esc(m.content)}</div>
+            </div>
+          </div>`;
+      }
+    });
+
+    if (busy) {
+      html += `
+        <div class="msg bot">
+          <div class="avatar">D</div>
+          <div class="msg-wrap">
+            <div class="msg-label">DATABOT</div>
+            <div class="bubble bot loading">Analisi in corso…</div>
+          </div>
+        </div>`;
+    }
+
+    msgBox.innerHTML = html;
+  }
+
+  /* ── Invia messaggio ──────────────────────────────────────── */
+  async function handleSend(overrideText) {
+    const q = (overrideText || inputEl.value).trim();
+    if (!q || busy) return;
+
+    inputEl.value        = "";
+    inputEl.style.height = "auto";
+    hideError();
+
+    messages.push({ role: "user", content: q });
+    render();
+    setBusy(true);
+    scrollBottom();
+
+    try {
+      const res  = await fetch("/api/chat", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ messages }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Errore server");
+      messages.push({ role: "assistant", content: data.content });
+    } catch (e) {
+      messages.pop();
+      showError("Si è verificato un errore. Riprova tra qualche istante.");
+    } finally {
+      setBusy(false);
+      render();
+      scrollBottom();
+      inputEl.focus();
+    }
+  }
+</script>
+
+</body>
+</html>
