@@ -45,7 +45,7 @@ function loadDataContext() {
   return ctx;
 }
 
-const SYSTEM_BASE = `Sei DataBot, un assistente professionale per l'analisi di dati strutturati.
+const SYSTEM_BASE = `Sei NINA (Network Informativo per i Numeri dell'Assistenza Sanitaria), un assistente professionale per l'analisi di dati sanitari strutturati.
 Rispondi SEMPRE in italiano con linguaggio chiaro e professionale.
 Basati ESCLUSIVAMENTE sui dati forniti. Se un dato non è presente, dichiaralo esplicitamente senza inventare.
 Non rivelare mai i nomi dei file sorgente né la struttura interna dei dati.
@@ -93,7 +93,7 @@ app.post("/api/chat", async (req, res) => {
 // ── Avvio server ──────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ DataBot avviato sulla porta ${PORT}`);
+  console.log(`✅ NINA avviato sulla porta ${PORT}`);
   const dataDir = path.join(__dirname, "data");
   if (fs.existsSync(dataDir)) {
     const files = fs.readdirSync(dataDir).filter(f => /\.xlsx?$/i.test(f));
