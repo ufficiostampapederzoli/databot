@@ -7,6 +7,27 @@ const Anthropic = require("@anthropic-ai/sdk");
 const app     = express();
 const client  = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+// ── Protezione con password (opzionale) ────────────────────────────────────────
+// Se SITE_USERNAME e SITE_PASSWORD sono impostate su Railway, il sito richiede
+// l'accesso. Se non sono impostate, il sito resta pubblico come prima.
+function checkAuth(req, res, next) {
+  const user = process.env.SITE_USERNAME;
+  const pass = process.env.SITE_PASSWORD;
+
+  if (!user || !pass) return next(); // Protezione disattivata
+
+  const header = req.headers.authorization;
+  if (header) {
+    const decoded = Buffer.from(header.split(" ")[1] || "", "base64").toString();
+    const [u, p] = decoded.split(":");
+    if (u === user && p === pass) return next();
+  }
+
+  res.set("WWW-Authenticate", 'Basic realm="NINA"');
+  return res.status(401).send("Accesso richiesto. Inserisci le credenziali per continuare.");
+}
+
+app.use(checkAuth);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
