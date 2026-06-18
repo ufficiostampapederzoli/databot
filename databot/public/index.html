@@ -197,6 +197,37 @@
       margin-top: 7px; text-align: center; letter-spacing: .2px;
     }
 
+    /* SOURCES BAR */
+    #sources-bar {
+      background: var(--navy-dark);
+      padding: 10px 24px;
+      flex-shrink: 0;
+    }
+    .sources-inner {
+      max-width: 700px; margin: 0 auto;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+    }
+    .sources-row {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 6px;
+      font-size: 11px;
+    }
+    .sources-row-delib {
+      color: #5A8AAA;
+      text-align: center;
+      line-height: 1.5;
+      max-width: 640px;
+    }
+    .sources-label {
+      color: #5A8AAA; font-weight: 500; letter-spacing: .3px;
+    }
+    #sources-bar a {
+      color: #8FB8DC; text-decoration: none;
+    }
+    #sources-bar a:hover { text-decoration: underline; color: #B8D4EE; }
+    .sources-sep { color: #2A4A6A; }
+
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
@@ -206,6 +237,9 @@
       footer { padding: 10px 14px 12px; }
       .bubble { font-size: 13px; }
       .header-badge { display: none; }
+      #sources-bar { padding: 8px 14px; }
+      .sources-row { font-size: 10px; gap: 4px; }
+      .sources-row-delib { font-size: 9.5px; }
     }
   </style>
 </head>
@@ -257,6 +291,22 @@
     </div>
   </div>
 </footer>
+
+<div id="sources-bar">
+  <div class="sources-inner">
+    <div class="sources-row">
+      <span class="sources-label">Fonti:</span>
+      <a href="https://www.agenas.gov.it/aree-tematiche/comunicazione/primo-piano/2774-presentazione-della-nuova-piattaforma-nazionale-delle-liste-di-attesa" target="_blank" rel="noopener noreferrer">Agenas PNLA</a>
+      <span class="sources-sep">·</span>
+      <a href="https://cup24.it/" target="_blank" rel="noopener noreferrer">Cup24</a>
+      <span class="sources-sep">·</span>
+      <a href="https://www.istat.it/notizia/medici-specialisti/" target="_blank" rel="noopener noreferrer">Istat</a>
+    </div>
+    <div class="sources-row sources-row-delib">
+      Deliberazione Regione Lombardia: N° XII / 2224 - ULTERIORI DETERMINAZIONI IN ORDINE AL CONTENIMENTO DEI TEMPI DI ATTESA PER LE PRESTAZIONI DI SPECIALISTICA AMBULATORIALE PREVISTE NEL PNGLA E PER I RICOVERI (Allegato 3)
+    </div>
+  </div>
+</div>
 
 <script>
   // Configura marked
