@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DataBot</title>
+  <title>NINA</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -226,6 +226,7 @@
       color: #8FB8DC; text-decoration: none;
     }
     #sources-bar a:hover { text-decoration: underline; color: #B8D4EE; }
+    .sources-extra { color: #8FB8DC; }
     .sources-sep { color: #2A4A6A; }
 
     ::-webkit-scrollbar { width: 5px; }
@@ -247,10 +248,10 @@
 
 <header>
   <div class="brand">
-    <div class="brand-icon">D</div>
+    <div class="brand-icon">N</div>
     <div>
-      <div class="brand-name">DataBot</div>
-      <div class="brand-sub">ASSISTENTE DATI</div>
+      <div class="brand-name">NINA</div>
+      <div class="brand-sub">NETWORK INFORMATIVO PER I NUMERI DELL'ASSISTENZA SANITARIA</div>
     </div>
   </div>
   <div class="header-badge">Dati aggiornati periodicamente</div>
@@ -260,13 +261,13 @@
   <div class="inner">
     <div id="welcome">
       <div class="welcome-intro">
-        <div class="welcome-title">Benvenuto in DataBot</div>
+        <div class="welcome-title">Benvenuto in NINA - Network Informativo per i Numeri dell'Assistenza Sanitaria</div>
         <div class="welcome-desc">
-          Puoi interrogare i dati in linguaggio naturale. Fai domande su prestazioni,
-          tempi di attesa, confronti tra regioni o andamenti nel tempo.
+          Se vuoi avere informazioni semplici e veloci sulle prenotazioni per prime visite ed esami diagnostici effettuate dal Servizio Sanitario Nazionale prova a farmi qualche domanda.<br><br>
+          Inoltre, ho integrato i dati dell'Agenas presenti sulla PNLA, con informazioni sui tempi e costi delle prestazioni oltre che a tener conto della popolazione residente (pesata) e dei medici attivi per alcune specialità.
         </div>
       </div>
-      <div class="section-label">Domande frequenti</div>
+      <div class="section-label">Prova a chiedermi:</div>
       <div class="suggested-list" id="suggested-list"></div>
     </div>
     <div id="messages" style="display:none;"></div>
@@ -296,14 +297,14 @@
   <div class="sources-inner">
     <div class="sources-row">
       <span class="sources-label">Fonti:</span>
-      <a href="https://www.agenas.gov.it/aree-tematiche/comunicazione/primo-piano/2774-presentazione-della-nuova-piattaforma-nazionale-delle-liste-di-attesa" target="_blank" rel="noopener noreferrer">Agenas PNLA</a>
+      <a href="https://www.agenas.gov.it/aree-tematiche/comunicazione/primo-piano/2774-presentazione-della-nuova-piattaforma-nazionale-delle-liste-di-attesa" target="_blank" rel="noopener noreferrer">Agenas PNLA</a><span class="sources-extra"> dati gennaio-aprile 2026 Italia e Piemonte</span>
       <span class="sources-sep">·</span>
       <a href="https://cup24.it/" target="_blank" rel="noopener noreferrer">Cup24</a>
       <span class="sources-sep">·</span>
       <a href="https://www.istat.it/notizia/medici-specialisti/" target="_blank" rel="noopener noreferrer">Istat</a>
     </div>
     <div class="sources-row sources-row-delib">
-      Deliberazione Regione Lombardia: N° XII / 2224 - ULTERIORI DETERMINAZIONI IN ORDINE AL CONTENIMENTO DEI TEMPI DI ATTESA PER LE PRESTAZIONI DI SPECIALISTICA AMBULATORIALE PREVISTE NEL PNGLA E PER I RICOVERI (Allegato 3)
+      Deliberazione Regione Lombardia: N° XII / 2224
     </div>
   </div>
 </div>
@@ -313,10 +314,8 @@
   marked.setOptions({ breaks: true, gfm: true });
 
   const SUGGESTED = [
-    "Quanti dati sono disponibili e come sono organizzati?",
-    "Mostrami un riepilogo dei principali indicatori",
-    "Ci sono dati per più anni? Confrontali",
-    "Qual è il valore medio dell'indicatore principale per area geografica?",
+    "Quante prenotazioni sono state effettuate in Italia e in Piemonte nei giorni feriali e nel weekend?",
+    "Quante prenotazioni per una prima visita di cardiologia non rispettano i tempi in Piemonte e quali sono le disponibilità a Torino tramite Cup24?",
   ];
 
   let messages = [];
@@ -394,9 +393,9 @@
         const rendered = marked.parse(m.content);
         html += `
           <div class="msg bot">
-            <div class="avatar">D</div>
+            <div class="avatar">N</div>
             <div class="msg-wrap">
-              <div class="msg-label">DATABOT</div>
+              <div class="msg-label">NINA</div>
               <div class="bubble bot">${rendered}</div>
             </div>
           </div>`;
@@ -406,9 +405,9 @@
     if (busy) {
       html += `
         <div class="msg bot">
-          <div class="avatar">D</div>
+          <div class="avatar">N</div>
           <div class="msg-wrap">
-            <div class="msg-label">DATABOT</div>
+            <div class="msg-label">NINA</div>
             <div class="bubble bot loading">Analisi in corso…</div>
           </div>
         </div>`;
